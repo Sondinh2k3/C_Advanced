@@ -85,3 +85,10 @@ Label:
 - **comment** là phần chú thích, nó thường được bỏ qua khi biên dịch code, nhưng nó sẽ mô tả giúp cho bạn có thể hiểu được cách phần mềm hoạt động.
 
 # LESSON 2: STDARG - ASSERT
+
+### A. THƯ VIỆN STDARG:
+
+**1, **
+
+- Cung cấp các phương thức để làm việc với các hàm có số lượng input parameter không cố định.
+- Các hàm như printf và scanf là ví dụ điển hình.
