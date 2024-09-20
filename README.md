@@ -10,8 +10,24 @@
 
 ### A. MACRO
 
-**Macro:** Là từ dùng để chỉ những thông tin được xử lý ở quá trình tiền xử lý (Preprocessor), chia làm 3 nhóm chính:
+**MACRO:** Là từ dùng để chỉ những thông tin được xử lý ở quá trình tiền xử lý (Preprocessor). Sau quá trình Preprocessor này, các **MACRO** sẽ được điền vào file mã nguồn tạo thành một _file.i_ .Chia làm 3 nhóm chính:
 
 - #include
 - #define, #undef
 - #if, #elif, #else, #ifdef , #ifndef
+
+**_Ví dụ_**
+
+````C
+#include <stdio.h>
+// Macro để tính bình phương của một số
+#define SQUARE(x) ((x) * (x))
+int main() {
+    
+    // Sử dụng macro để tính bình phương của num
+    int result = SQUARE(5);
+    printf("Result is: %d\n", result);
+    return 0;
+}```
+
+````
