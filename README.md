@@ -2,7 +2,7 @@
 
 **Build Process** là một quá trình xử lý với Input là các file source code (.c, .cpp, .h, .s …) và đầu ra là các file nhị phân để sử dụng (.exe, .elf, .hex, .bin …)
 
-<img src = "./img/build_process.png">
+<img width = 200 alt = "Build process" src = "./img/build_process.png">
 
 - file.i: Gộp các file source với các file thư viện tương ứng, thay thế các macro, và xóa các comment.
 - file.s: Dịch sang hợp ngữ Assembly.
@@ -88,7 +88,11 @@ Label:
 
 ### A. THƯ VIỆN STDARG:
 
-**1, **
+File header _stdarg.h_ xác định một loại biến **va_list** và **ba macro** có thể được sử dụng để lấy các đối số trong một hàm khi không biết số lượng đối số, tức là số lượng đối số có thể thay đổi.
 
 - Cung cấp các phương thức để làm việc với các hàm có số lượng input parameter không cố định.
 - Các hàm như printf và scanf là ví dụ điển hình.
+
+**1, Library Variables**
+
+<img width=50 alt="va_list" src = "./img/va_list.png">
