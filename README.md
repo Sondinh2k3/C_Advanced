@@ -18,16 +18,35 @@
 
 **_Ví dụ_**
 
-````C
+```C
 #include <stdio.h>
-// Macro để tính bình phương của một số
+// Macro để tính bình phương của một số
 #define SQUARE(x) ((x) * (x))
-int main() {
-    
+    int main() {
+    
     // Sử dụng macro để tính bình phương của num
     int result = SQUARE(5);
-    printf("Result is: %d\n", result);
-    return 0;
-}```
+       printf("Result is: %d\n", result);
+       return 0;
+}
 
-````
+```
+
+### B. COMPILER
+
+- Sau khi file.i qua bộ compiler, ta sẽ được file.s (file assembly)
+- Cấu trúc bên trong file.s (file assembly) như sau:
+
+```Assembly
+Label:
+    Opcode Operand; Comment
+    Opcode Operand; Comment
+    Opcode Operand; Comment
+```
+
+- **label** nằm ở cột đầu tiên dùng để xác định vị trí trong bộ nhớ của tập lệnh hiện tại, bắt buộc phải chọn tên duy nhất cho mỗi label.
+- **opcode** là mã máy chỉ cho bộ xử lý lệnh nào cần phải thực hiện.
+- **operand** là toán hạng xác định vị trí của dữ liệu để thực hiện lệnh. Với tập lệnh Thumb thì có 0,1,2,3, hoặc 4 operand (toán hạng) cách nhau bằng dấu phẩy.
+- **comment** là phần chú thích, nó thường được bỏ qua khi biên dịch code, nhưng nó sẽ mô tả giúp cho bạn có thể hiểu được cách phần mềm hoạt động.
+
+# LESSON 2: STDARG - ASSERT
