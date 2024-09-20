@@ -8,6 +8,10 @@
 - file.s: Dịch sang hợp ngữ Assembly.
 - file.o: Mã máy
 
-### A. COMPILER
+### A. MACRO
 
-> (https://www.geeksforgeeks.org/compiling-a-c-program-behind-the-scenes/)
+**Macro:** Là từ dùng để chỉ những thông tin được xử lý ở quá trình tiền xử lý (Preprocessor), chia làm 3 nhóm chính:
+
+- #include
+- #define, #undef
+- #if, #elif, #else, #ifdef , #ifndef
