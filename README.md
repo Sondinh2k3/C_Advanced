@@ -16,18 +16,53 @@
 - #define, #undef
 - #if, #elif, #else, #ifdef , #ifndef
 
-**_Ví dụ_**
+**_Ví dụ 1_**
+
+```C
+#include <stdio.h>
+// Định nghĩa hằng số Pi sử dụng #define
+#define PI 3.14
+
+int main() {
+    // Sử dụng hằng số Pi trong chương trình
+    double radius = 5.0;
+    double area = PI * radius * radius;
+    printf("Radius: %.2f\n", radius);
+    printf("Area of the circle: %.2f\n", area);
+    return 0;
+}
+
+```
+
+**_Ví dụ 2_**
 
 ```C
 #include <stdio.h>
 // Macro để tính bình phương của một số
 #define SQUARE(x) ((x) * (x))
-    int main() {
+
+int main() {
     
     // Sử dụng macro để tính bình phương của num
     int result = SQUARE(5);
        printf("Result is: %d\n", result);
        return 0;
+}
+
+```
+
+**_Ví dụ 3_**
+
+```C
+#include <stdio.h>
+#define DISPLAY_SUM(a,b) \
+printf("This is macro to sum 2 number\n"); \
+printf("Result is: %d", a+b);
+
+int main() {
+    
+    DISPLAY_SUM(5,6)
+    return 0;
 }
 
 ```
