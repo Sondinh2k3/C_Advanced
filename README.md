@@ -96,3 +96,173 @@ File header _stdarg.h_ xác định một loại biến **va_list** và **ba mac
 **1, Library Variables**
 
 <img width=300 alt="va_list" src = "./img/va_list.png">
+
+- va_list: là một kiểu dữ liệu để đại diện cho danh sách các đối số biến đổi.
+- va_list => kiểu dữ liệu => biến là một con trỏ để lưu một mảng các địa chỉ mà ta không xác định được số lượng
+
+**2, Library Macros**
+
+<img width=300 alt="macros" src="./img/macros.png">
+
+- va_start: Bắt đầu một danh sách đối số biến đổi. Nó cần được gọi trước khi truy cập các đối số biến đổi đầu tiên.
+- va_arg: Truy cập một đối số trong danh sách. Hàm này nhận một đối số của kiểu được xác định bởi tham số thứ hai. => Nói chung là nó sẽ lấy giá trị và chuyển con trỏ đến vị trí tiếp theo
+- va_end: Kết thúc việc sử dụng danh sách đối số biến đổi. Nó cần được gọi trước khi kết thúc hàm. Do va_start có thể được coi là một cấp phát động nên ta cần giải phóng nó với va_end
+
+**_Để dễ hiểu hơn, ta đọc đoạn sau:_**
+
+- va_start => Dùng để tạo ra một vùng nhớ khởi tạo cho vị trí để lưu các địa chỉ của toán tử ... mà args sẽ có thể trỏ tới để dung, có thể hiểu là nó cấp phát động một vùng nhớ. Truyền vào 2 tham số bao gồm biến con trỏ va_list đã khởi tạo, tham số thứ 2 là tên biến mà biến con trỏ trỏ tới
+
+- va_arg => Dịch chuyển con trỏ đến vị trí tiếp theo và lấy giá trị tại địa chỉ cũ vừa bị dịch chuyển
+- va_end => giải phóng vùng nhớ mà va_arg cấp phát động
+
+**_Example 1:_**
+
+> Code
+
+```C
+#include <stdio.h>
+#include <stdarg.h>
+
+int sum(int count, ...) {
+	va_list args; // args là 1 con trỏ, dùng để các lưu địa chỉ các tham số truyền vào
+	va_start(args, count);  // va_start () tạo vùng nhớ, địa chỉ đầu tiên của nó là địa chỉ biến count đc lưu trong args
+
+	int result = 0;
+	for (int i = 0; i < count; i++) {
+		result += va_arg(args, int); // va_arg () dịch chuyển đến địa chỉ tiếp theo, và lấy giá trị tại địa chỉ đó
+	}
+
+	va_end(args); // va_ end () giải phóng vùng nhớ
+
+	return result;
+}
+
+int main() {
+	printf("Sum: %d\n", sum(4, 1, 2, 3, 4));
+	return 0;
+}
+
+```
+
+> Output:
+
+```C
+    Sum = 10
+```
+
+**_Example 2:_**
+
+```C
+#include <stdio.h>
+#include <stdarg.h>
+typedef struct Data
+{
+    int x;
+    double y;
+} Data;
+int sum(int count, ...) {
+    va_list args;
+    va_start(args, count);
+    int result = 0;
+    for (int i = 0; i < count; i++)
+    {
+        printf("value is: %d\n", va_arg(args, Data).x);
+    }
+    va_end(args);
+    return result;
+}
+int main() {
+    printf("size of int: %d\n", sizeof(__int64));
+    printf("Sum: %d\n", sum(8, (Data){2,5.0} , 2, 3, 4.6, 10, 20.5 , 30 , 40));
+    return 0;
+}
+```
+
+**_Example 3:_**
+
+```C
+#include <stdio.h>
+#include <stdarg.h>
+typedef struct Data
+{
+    int x;
+    double y;
+} Data;
+void display(int count, ...) {
+    va_list args;
+    va_start(args, count);
+    int result = 0;
+for (int i = 0; i < count; i++)
+    {
+        Data tmp = va_arg(args,Data);
+        printf("Data.x at %d is: %d\n", i,tmp.x);
+        printf("Data.y at %d is: %f\n", i,tmp.y);
+    }
+   
+    va_end(args);
+}
+int main() {
+    display(3, (Data){2,5.0} , (Data){10,57.0}, (Data){29,36.0});
+    return 0;
+}
+
+```
+
+**_Example 4:_**
+
+> Code
+
+```C
+	#include <stdio.h>
+	#include <stdarg.h>
+
+	typedef enum { TEMPERATURE_SENSOR, PRESSURE_SENSOR } SensorType;
+
+	void processSensorData(SensorType type, ...) {
+		va_list args;
+		va_start(args, type);
+
+		switch (type) {
+		    case TEMPERATURE_SENSOR: {
+			int numArgs = va_arg(args, int);
+			int sensorId = va_arg(args, int);
+			float temperature = va_arg(args, double); // float được promote thành double
+			printf("Temperature Sensor ID: %d, Reading: %.2f degrees\n", sensorId, temperature);
+			if (numArgs > 2) {
+			    // Xử lý thêm tham số nếu có
+			    char* additionalInfo = va_arg(args, char*);
+			    printf("Additional Info: %s\n", additionalInfo);
+			}
+			break;
+		    }
+		    case PRESSURE_SENSOR: {
+			int numArgs = va_arg(args, int);
+			int sensorId = va_arg(args, int);
+			int pressure = va_arg(args, int);
+			printf("Pressure Sensor ID: %d, Reading: %d Pa\n", sensorId, pressure);
+			if (numArgs > 2) {
+			    // Xử lý thêm tham số nếu có
+			    char* unit = va_arg(args, char*);
+			    printf("Unit: %s\n", unit);
+			}
+			break;
+		    }
+		}
+
+		va_end(args);
+	}
+
+	int main() {
+		processSensorData(TEMPERATURE_SENSOR, 3, 1, 36.5, "Room Temperature");
+		processSensorData(PRESSURE_SENSOR, 2, 2, 101325);
+		return 0;
+	}
+```
+
+> Output:
+
+```C
+    Temperature Sensor ID: 1, Reading: 36.50 degrees
+	Additional Info: Room Temperature
+	Pressure Sensor ID: 2, Reading: 101325 Pa
+```
