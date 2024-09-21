@@ -266,3 +266,121 @@ int main() {
 	Additional Info: Room Temperature
 	Pressure Sensor ID: 2, Reading: 101325 Pa
 ```
+
+**_Example 5:_**
+
+> Code
+
+```C
+#include <stdio.h>
+#include <stdarg.h>
+
+typedef enum {
+    TURN_ON,
+    TURN_OFF,
+    SET_LEVEL,
+    SEND_MESSAGE
+} CommandType;
+
+void sendCommand(CommandType command, ...) {
+    va_list args;
+    va_start(args, command);
+
+    switch (command) {
+        case TURN_ON:
+        case TURN_OFF: {
+            int deviceID = va_arg(args, int);
+            printf("Command: %s Device ID: %d\n", command == TURN_ON ? "Turn On" : "Turn Off", deviceID);
+            break;
+        }
+        case SET_LEVEL: {
+            int deviceID = va_arg(args, int);
+            int level = va_arg(args, int);
+            printf("Set Level of Device ID %d to %d\n", deviceID, level);
+            break;
+        }
+        case SEND_MESSAGE: {
+            char* message = va_arg(args, char*);
+            printf("Send Message: %s\n", message);
+            break;
+        }
+    }
+
+    va_end(args);
+}
+
+int main() {
+    sendCommand(TURN_ON, 1);
+    sendCommand(TURN_OFF, 2);
+    sendCommand(SET_LEVEL, 3, 75);
+    sendCommand(SEND_MESSAGE, "Hello World");
+    return 0;
+}
+```
+
+### B. THƯ VIỆN ASSERT
+
+> - Cung cấp một macro được gọi là assert
+> - Macro này được sử dụng để kiểm tra một điều kiện
+> - Nếu điều kiện trong đó là đúng (true), thì không có điều gì xảy ra và chương trình tiếp tục thực hiện
+> - Nếu điều kiện là sai (fasle), chương trình sẽ dừng lại và thông báo ra một thông điệp lỗi
+> - Được dùng trong debug, dùng #define NDEBUG để tắt debug ==> Tức là khi ta ko dùng define cái này thì hàm assert() sẽ chạy như bình thường, nếu điều kiện bên trong có lỗi thì sẽ hiện lỗi. Còn nếu ta dùng #define NDEBUG vào thì compiler sẽ bỏ qua assert().
+
+**Example:**
+
+<img width=400 alt="anh1" src="./img/assert1.png">
+<img width=400 alt="anh2" src="./img/assert2.png">
+
+> Macro is used for debugging
+
+```C
+#define LOG(condition, cmd) assert(condition && #cmd);
+```
+
+**_Example 1:_**
+
+```C
+#include <stdio.h>
+#include <assert.h>
+int main() {
+	    int x = 5;
+	    assert(x == 5);
+	    // Chương trình sẽ tiếp tục thực thi nếu điều kiện là đúng.
+	    printf("X is: %d", x);
+	   
+	    return 0;
+	}
+```
+
+**Ứng dụng của thư viện Assert:**
+
+- Lỗi truy cập mảng không an toàn
+- Lỗi chia cho số 0.
+- Chia số nguyên cho số nguyên, kết quả là số thực.
+
+**_Example 2:_**
+
+```C
+	#include <assert.h>
+	#define ASSERT_IN_RANGE(val, min, max) assert((val) >= (min) && (val) <= (max))
+
+	void setLevel(int level) {
+	    ASSERT_IN_RANGE(level, 1, 10);
+	    // Thiết lập cấp độ
+	}
+```
+
+**_Example 3:_**
+
+```C
+	#include <assert.h>
+	#include <stdint.h>
+
+	#define ASSERT_SIZE(type, size) assert(sizeof(type) == (size))
+
+	void checkTypeSizes() {
+	    ASSERT_SIZE(uint32_t, 4);
+	    ASSERT_SIZE(uint16_t, 2);
+	    // Kiểm tra các kích thước kiểu dữ liệu khác
+	}
+```
