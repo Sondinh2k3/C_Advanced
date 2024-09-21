@@ -328,8 +328,9 @@ int main() {
 
 **Example:**
 
-<img width=400 alt="anh1" src="./img/assert1.png">
-<img width=400 alt="anh2" src="./img/assert2.png">
+<img alt="anh1" src="./img/assert1.png">
+
+<img alt="anh2" src="./img/assert2.png">
 
 > Macro is used for debugging
 
