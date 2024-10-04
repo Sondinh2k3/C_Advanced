@@ -91,3 +91,42 @@ int main() {
 ```Terminal
 Error: x is not equal to 10
 ```
+
+# ĐỀ BÀI: Tạo hai file: Một file tiêu đề (Header) và một file nguồn (Source)
+
+- File tiêu đề sẽ chứa khai báo của một hàm, và sử dụng các Macro #ifndef, #define và #endif để ngăn chặn việc include nó nhiều lần. File nguồn sẽ định nghĩa hàm đó và sử dụng hàm trong hàm main/
+
+**1. Tạo file tiêu đề (Header File): math_utils.h**
+
+```C
+// Kiểm tra xem macro MATH_UTILS_H đã được định nghĩa hay chưa
+#ifndef MATH_UTILS_H
+#define MATH_UTILS_H
+
+// Khai báo hàm
+int add(int a, int b);
+
+#endif // Kết thúc của #ifndef
+```
+
+Trong đoạn code trên, #ifndef MATH_UTILS_H kiểm tra xem MATH_UTILS_H đã được định nghĩa trước đó hay chưa. Nếu chưa, #define MATH_UTILS_H sẽ được thực thi, ngăn chặn việc include file này nhiều lần.
+
+**Tạo File Nguồn (Source File): main.c**
+
+```C
+#include <stdio.h>
+#include "math_utils.h" // Bao gồm file tiêu đề
+
+// Định nghĩa hàm đã khai báo trong file tiêu đề
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    printf("Sum of 3 and 5 is %d\n", add(3, 5));
+    return 0;
+}
+```
+
+- Trong file main.c, hàm add được định nghĩa, và sau đó được gọi trong hàm main.
+- Giải thích được tại sao phải sử dụng #ifndef, #define, và #endif
