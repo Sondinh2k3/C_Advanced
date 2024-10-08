@@ -888,3 +888,132 @@ _Lưu ý:_
 >   Nếu con trỏ đó đang là Null, thì ta có thể gán giá trị thoải mái cho nó.
 
 > - Sau khi làm việc xong với con trỏ, ta thường sẽ gán giá trị Null cho nó để sau này nếu cần xử lý thì ta còn biết là có thể xử lý với nó được
+
+# LESSON 4: EXTERN - VOLATILE - REGISTER
+
+# LESSON 5: GOTO - SETJMP.H
+
+### Goto:
+
+> - **goto** là một từ khóa trong ngôn ngữ lập trình C, cho phép chương trình nhảy đến một nhãn (label) đã được đặt trước đó trong cùng một hàm. Mặc dù nó cung cấp khả năng kiểm soát flow của chương trình, nhưng việc sử dụng goto thường được xem là không tốt vì nó có thể làm cho mã nguồn trở nên khó đọc và khó bảo trì.
+
+**_Example:_**
+
+```C
+#include <stdio.h>
+int main() {
+	int i = 0;
+    // Đặt nhãn
+    start:
+        if (i >= 5) {
+            goto end;  // Chuyển control đến nhãn "end"
+        }
+        printf("%d ", i);
+        i++;
+        goto start;  // Chuyển control đến nhãn "start"
+    // Nhãn "end"
+    end:
+        printf("\n");
+    return 0;
+}
+
+```
+
+**_Example 2:_**
+
+```C
+#include <stdio.h>
+void delay(double second)
+{
+    double start = 0;
+    while (start < second * 6000000)
+    {
+        start++;
+    }  
+}
+// Khai báo các trạng thái đèn giao thông
+typedef enum 
+{
+    RED,
+    YELLOW,
+    GREEN
+} TrafficLightState;
+
+int main() {
+    
+    // Ban đầu, đèn giao thông ở trạng thái đỏ
+    TrafficLightState state = RED;
+    // Vòng lặp vô hạn để mô phỏng đèn giao thông
+    while (1) {
+        switch (state) {
+            case RED:
+                printf("RED Light\n");
+                delay(50);  // Giữ trạng thái đèn đỏ trong x giây
+                
+                // Chuyển đến trạng thái đèn vàng
+                state = GREEN;
+                goto skip_sleep;  // Nhảy qua sleep() khi chuyển trạng thái
+			case YELLOW:
+                printf("YELLOW Light\n");
+                delay(20);  // Giữ trạng thái đèn vàng trong y giây
+                
+                // Chuyển đến trạng thái đèn xanh
+                state = RED;
+                goto skip_sleep;  // Nhảy qua sleep() khi chuyển trạng thái
+            case GREEN:
+                printf("GREEN Light\n");
+                delay(100);  // Giữ trạng thái đèn xanh trong z giây
+                
+                // Chuyển đến trạng thái đèn đỏ
+                state = YELLOW;
+                goto skip_sleep;  // Nhảy qua sleep() khi chuyển trạng thái
+        }
+    // Nhãn để nhảy qua sleep() khi chuyển trạng thái
+        skip_sleep:;
+    }
+    return 0;
+}
+```
+
+**Ứng dụng:**
+
+> - Trong thực tế: goto được dùng để thực hiện out khỏi các vòng lặp lồng vào nhau ngay lập tức.
+> - Ví dụ: trong trường hợp đang thực hiện một nhiệm vụ nào đấy, mà ta nhấn nút để thực hiện một nhiệm vụ khác => sử dụng goto đến một nhãn exit đặt ở cuối chương trình => quay lại while(1) và lặp lại từ đầu
+
+**_Example 3:_**
+
+```C
+#include <stdio.h>
+void delay()
+{
+    double start;
+    while (start < 60000000)
+    {
+        start++;
+    }
+    
+}
+char letter = 'A';
+char first_sentence[] = "HELLO";
+char second_sentence[] = "FASHION COTHES";
+char third_sentence[] = "SUITABLE PRICE";
+int letter_A[8][8] = {  {0,0,1,0,0,0,0,0},
+                        {0,1,0,1,0,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,1,1,1,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},  };
+int letter_H[8][8] = {  {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,1,1,1,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},
+                        {1,0,0,0,1,0,0,0},  };
+
+
+
+```
