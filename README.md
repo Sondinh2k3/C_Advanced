@@ -1250,4 +1250,493 @@ int resultLeftShift = num << shiftAmount;
 int resultRightShift = num >> shiftAmount;
 ```
 
-<img alt="dich bit" src="./img/shift_bit.png">;
+<img alt="dich bit" src="./img/shift_bit.png">
+
+### Bitmask sử dụng khi nào?
+
+_Ta xét ví dụ sau:_
+
+```C
+	uint8_t gender = 0; //0 là giới tính nam, 1 là giới tính nữ
+	uint8_t hat = 0; //0 là không đội mũ, 1 là có đội mũ
+	uint8_t shirt = 0;  //0 là mặc áo cộc tay, 1 là mặc áo dài tay.
+```
+
+=> Ta thấy rằng trong ví dụ trên, mỗi biến chỉ cần biểu diễn duy nhất 2 số là 0 và 1, nhưng lại dùng tận 8 bit để biểu diễn => Gây lãng phí tài nguyên.
+
+=> Vậy có cách nào để giải quyết vấn đề này không?
+
+> Đây là lúc ta dung đến Bitmask
+
+<img alt="ví dụ khi cần dùng bitmask" src="./img/bitmask.png">
+
+**_Example 1:_**
+
+```C
+#include <stdio.h>
+#include <stdint.h>
+#define GENDER        1 << 0  // Bit 0: Giới tính (0 = Nữ, 1 = Nam)
+#define TSHIRT        1 << 1  // Bit 1: Áo thun (0 = Không, 1 = Có)
+#define HAT           1 << 2  // Bit 2: Nón (0 = Không, 1 = Có)
+#define SHOES         1 << 3  // Bit 3: Giày (0 = Không, 1 = Có)
+// Tự thêm 5 tính năng khác
+#define FEATURE1      1 << 4  // Bit 4: Tính năng 1
+#define FEATURE2      1 << 5  // Bit 5: Tính năng 2
+#define FEATURE3      1 << 6  // Bit 6: Tính năng 3
+#define FEATURE4      1 << 7  // Bit 7: Tính năng 4
+void enableFeature(uint8_t *features, uint8_t feature) {
+    *features |= feature;
+}
+void disableFeature(uint8_t *features, uint8_t feature) {
+    *features &= ~feature;
+}
+int isFeatureEnabled(uint8_t features, uint8_t feature) {
+    return (features & feature) != 0;
+}
+
+void listSelectedFeatures(uint8_t features) {
+    printf("Selected Features:\n");
+    if (features & GENDER) {
+        printf("- Gender\n");
+    }
+    if (features & TSHIRT) {
+        printf("- T-Shirt\n");
+    }
+    if (features & HAT) {
+        printf("- Hat\n");
+    }
+    if (features & SHOES) {
+        printf("- Shoes\n");
+    }
+    // Thêm các điều kiện kiểm tra cho các tính năng khác
+}
+void removeFeatures(uint8_t *features, uint8_t unwantedFeatures) {
+    *features &= ~unwantedFeatures;
+}
+
+int main() {
+    uint8_t options = 0;
+    // Thêm tính năng 
+    enableFeature(&options, GENDER | TSHIRT | HAT);
+    removeFeatures(&options, TSHIRT);
+    // Liệt kê các tính năng đã chọn
+    listSelectedFeatures(options);
+    
+    return 0;
+}
+
+```
+
+**_Example 2:_**
+
+```C
+#include <stdio.h>
+#define LED1 1 << 0 // 0001
+#define LED2 1 << 1 // 0010
+#define LED3 1 << 2 // 0100
+#define LED4 1 << 3 // 1000
+void enableLED(unsigned int *GPIO_PORT, unsigned int LED) {
+    *GPIO_PORT |= LED;
+}
+void disableLED(unsigned int *GPIO_PORT, unsigned int LED) {
+    *GPIO_PORT &= ~LED;
+}
+int main() {
+    unsigned int GPIO_PORT = 0; // Giả sử là biến điều khiển cổng GPIO
+    // Bật LED1 và LED3
+    enableLED(&GPIO_PORT, LED1 | LED3);
+    if (GPIO_PORT & LED1 )
+    {
+        printf("LED1 is on\n");
+    }
+if (GPIO_PORT & LED2)
+    {
+        printf("LED2 is on\n");
+    }
+    if (GPIO_PORT & LED3)
+    {
+        printf("LED3 is on\n");
+    }
+    
+    // Tắt LED1 và bật LED2
+    disableLED(&GPIO_PORT, LED1);
+    enableLED(&GPIO_PORT, LED2);
+    if (GPIO_PORT & LED1 )
+    {
+        printf("LED1 is on\n");
+    }
+    if (GPIO_PORT & LED2)
+    {
+        printf("LED2 is on\n");
+    }
+
+   	if (GPIO_PORT & LED3)
+    {
+        printf("LED3 is on\n");
+    }
+    // Cập nhật trạng thái của GPIO_PORT tương ứng với hardware
+    return 0;
+}
+```
+
+**_Example 3:_**
+
+```C
+#include <stdio.h>
+#include <stdint.h>
+#define ENABLE 1
+#define DISABLE 0
+typedef struct {
+    uint8_t LED1 : 1;
+    uint8_t LED2 : 1;
+    uint8_t LED3 : 1;
+    uint8_t LED4 : 1;
+    uint8_t LED5 : 1;
+    uint8_t LED6 : 1;
+    uint8_t LED7 : 1;
+    uint8_t LED8 : 1;
+} LEDStatus;
+
+int main() {
+    LEDStatus ledStatus = {.LED7 = ENABLE};
+    // Bật LED 1 và 3
+    ledStatus.LED1 = ENABLE;
+    ledStatus.LED3 = ENABLE;
+    // Kiểm tra trạng thái của LED 1
+    if (ledStatus.LED1) {
+        printf("LED1 is on\n");
+    }
+    return 0;
+}
+
+```
+
+> - Dấu :1 => Cho biết là LED chỉ dùng 1 bit thôi, mà kiểu uint8_t là 8 bit => Khi khai báo đến LED nào thì LED đấy sẽ nhảy vào bit trống trong 8 bit đó, và chỉ chiếm đúng 1 bit
+> - Ta thấy có thể bật tắt 8 con LED, với struct đã khai báo mà chỉ tốn đúng 1 byte => Bitmask giúp tiết kiệm bộ nhớ.
+
+**_Example 4:_**
+
+```C
+#include <stdio.h>
+#include <stdint.h>
+#define COLOR_RED 0
+#define COLOR_BLUE 1
+#define COLOR_BLACK 2
+#define COLOR_WHITE 3
+#define POWER_100HP 0
+#define POWER_150HP 1
+#define POWER_200HP 2
+#define ENGINE_1_5L 0
+#define ENGINE_2_0L 1
+typedef uint8_t CarColor;
+typedef uint8_t CarPower;
+typedef uint8_t CarEngine;
+#define SUNROOF_MASK 1 << 0     // 0001
+#define PREMIUM_AUDIO_MASK 1 << 1 // 0010
+#define SPORTS_PACKAGE_MASK 1 << 2 // 0100
+// Thêm các bit masks khác tùy thuộc vào tùy chọn
+
+typedef struct {
+    uint8_t additionalOptions : 3; // 3 bits cho các tùy chọn bổ sung
+    CarColor color : 2;
+    CarPower power : 2;
+    CarEngine engine : 1;
+    
+} CarOptions;
+void configureCar(CarOptions *car, CarColor color, CarPower power, CarEngine engine, uint8_t options) {
+    car->color = color;
+    car->power = power;
+    car->engine = engine;
+    car->additionalOptions = options;
+}
+void setOption(CarOptions *car, uint8_t optionMask) {
+    car->additionalOptions |= optionMask;
+}
+void unsetOption(CarOptions *car, uint8_t optionMask) {
+    car->additionalOptions &= ~optionMask;
+}
+
+void displayCarOptions(const CarOptions car) {
+    const char *colors[] = {"Red", "Blue", "Black", "White"};
+    const char *powers[] = {"100HP", "150HP", "200HP"};
+    const char *engines[] = {"1.5L", "2.0L"};
+    printf("Car Configuration: \n");
+    printf("Color: %s\n", colors[car.color]);
+    printf("Power: %s\n", powers[car.power]);
+    printf("Engine: %s\n", engines[car.engine]);
+    printf("Sunroof: %s\n", (car.additionalOptions & SUNROOF_MASK) ? "Yes" : "No");
+    printf("Premium Audio: %s\n", (car.additionalOptions & PREMIUM_AUDIO_MASK) ? "Yes" : "No");
+    printf("Sports Package: %s\n", (car.additionalOptions & SPORTS_PACKAGE_MASK) ? "Yes" : "No");
+}
+int main() {
+    CarOptions myCar = {COLOR_BLACK, POWER_150HP, ENGINE_2_0L};
+    setOption(&myCar, SUNROOF_MASK);
+    setOption(&myCar, PREMIUM_AUDIO_MASK);
+    
+    displayCarOptions(myCar);
+    unsetOption(&myCar, PREMIUM_AUDIO_MASK); 
+    displayCarOptions(myCar);
+    printf("size of my car: %d\n", sizeof(CarOptions));
+    return 0;
+}
+
+```
+
+> - Mục đích cuối cùng của cái Bitmask này là gì?
+> - Đó là giúp tối ưu hóa bộ nhớ, không gây lãng phí bộ nhớ
+> - Bạn thử suy nghĩ xem, giả sử với một biến chỉ cần biểu diễn bởi 2 giá trị 0 và 1 thì ta cần gì phải sử dụng đến 8 bit bộ nhớ cơ chứ :))
+
+# LESSON 7: STRUCT
+
+### Khái niệm:
+
+> - Trong ngôn ngữ lập trình C, struct là một cấu trúc dữ liệu cho phép lập trình viên tự định nghĩa một kiểu dữ liệu mới bằng cách nhóm các biến có các kiểu dữ liệu khác nhau lại với nhau. struct cho phép tạo ra một thực thể dữ liệu lớn hơn và có tổ chức hơn từ các thành viên (members) của nó.
+
+### Cú pháp:
+
+```C
+struct TenStruct {
+	kieuDuLieu1 thanhVien1;
+    kieuDuLieu2 thanhVien2;
+    // ...
+};
+
+```
+
+**_Example:_**
+
+```C
+struct Example {
+    uint8_t a;    
+    uint16_t b;
+    uint32_t c;    
+};
+
+```
+
+### Tính toán kích thước của Struct:
+
+> - Đầu tiên sẽ quét trong struct xem thằng nào lớn nhất => Tạo một hang tương ứng với số byte của thằng lớn nhất đó.
+> - Sau đó, xét lần lượt các biến bên trong struct từ trên xuống dưới, điền lần lượt vào các hàng, bao nhiêu byte tương ứng với bấy nhiêu ô. Chỉ điền vào hàng nếu hang đó đủ để chứa, không thì phải xuống hang tiếp theo.
+> - Cộng các hàng lại ta sẽ được kích thước của struct.
+
+**_Example 1:_**
+
+```C
+struct Example {
+    uint8_t a;    
+    uint16_t b;
+    uint32_t c;    
+};
+
+```
+
+Quét thầy biến c có kích thước lớn nhất (4 byte) => Mỗi một lần quét sẽ quét 4 byte <=> 4 ô. Sau đó ta sẽ quét lần lượt các biến từ trên xuống dưới. Đầu tiên là quét 4 ô đầu, biến a (1 byte <=> 1 ô) nên còn lại 3 ô; biến b (2 byte <=> 2 ô) nên còn lại 1 ô, và biến c chiếm 4 ô nên ko vừa 1 ô cuối, vì vậy sẽ quét tiếp 4 ô tiếp theo và đặt biến c vào. Tổng lại ta sẽ cần 8 ô tương ứng với 8 byte.
+
+=> Kích thước của Struct là: 8 byte
+
+<img alt="hinh anh mo ta" src="./img/struct1.png">
+
+**_Example 2:_**
+
+```C
+struct Example {
+    uint8_t a;    
+    uint32_t b;
+    uint16_t c;  
+};
+
+```
+
+<img alt="hinh anh mo ta" src="./img/struct2.png">
+
+=> Trong ví dụ này, kích thước của struct là 12 byte
+
+**_Example 3:_**
+
+```C
+struct Example1 {
+    uint8_t arr1[5];    
+    uint16_t arr2[4];    
+uint32_t arr3[2];
+};
+
+```
+
+<img alt="hinh anh mo ta" src="./img/struct3.png">
+
+=> Kích thước của struct lúc này là: 24 byte
+
+### Một số ứng dụng:
+
+> - Dùng trong việc tạo ra các biến mà chứa nhiều biến với nhiều kiểu dữ liệu bên trong nó
+> - Tùy thuộc vào cách sắp xếp các biến con thì có thể tối ưu được kích thước của struct => Tối ưu bộ nhớ
+
+**_Example:_**
+
+```C
+struct Student {
+    int studentID;
+    char name[50];
+    float GPA;
+};
+```
+
+```C
+struct Address {
+    int number;
+    char street[50];
+    char city[30];
+    int zipCode;
+};
+
+```
+
+```C
+struct Point {
+    float x;
+    float y;
+};
+
+```
+
+> - Ngoài ra struct còn được ứng dụng trong JSON, List
+
+# LESSON 8: UNION
+
+### Khái niệm:
+
+> - Trong ngôn ngữ lập trình C, union là một cấu trúc dữ liệu giúp lập trình viên kết hợp nhiều kiểu dữ liệu khác nhau vào cùng một vùng nhớ. Mục đích chính của union là tiết kiệm bộ nhớ bằng cách chia sẻ cùng một vùng nhớ cho các thành viên của nó. Điều này có nghĩa là, trong một thời điểm, chỉ một thành viên của union có thể được sử dụng. Điều này được ứng dụng nhằm tiết kiệm bộ nhớ.
+
+### Cú pháp:
+
+```C
+union TenUnion {
+	kieuDuLieu1 thanhVien1;
+    kieuDuLieu2 thanhVien2;
+    // ...
+};
+
+```
+
+**_Example:_**
+
+```C
+union Data {
+	uint8_t a;
+    uint16_t b;
+    uint32_t c;
+};
+
+```
+
+<img alt="hinh anh mo ta" src="./img/union1.png">
+
+**_Example 1:_**
+
+```C
+#include <stdio.h>
+#include <stdint.h>
+typedef union Data {
+    uint8_t arr1[5];
+    uint8_t arr2[3];
+    uint8_t arr3[6];
+}Data;
+void display(uint8_t arr[], int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        printf("arr[%d]: %d\n",i, arr[i]);
+    }
+    printf("----------\n");
+}
+
+void display_address(uint8_t arr[], int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        printf("address of arr[%d]: %p\n",i, &arr[i]);
+    }
+    printf("----------\n");
+}
+int main()
+{
+    Data data_test;
+    data_test.arr1[0] = 11;
+    data_test.arr1[1] = 12;
+    data_test.arr1[2] = 13;
+    data_test.arr1[3] = 14;
+    data_test.arr1[4] = 15;
+    display(data_test.arr1,5);
+
+	data_test.arr2[0] = 21;
+	    data_test.arr2[1] = 22;
+	    data_test.arr2[2] = 23;
+	    display(data_test.arr2,3);
+	    display(data_test.arr1,5);
+	    data_test.arr3[0] = 31;
+	    data_test.arr3[1] = 32;
+	    data_test.arr3[2] = 33;
+	    data_test.arr3[3] = 34;
+	    data_test.arr3[4] = 35;
+	    data_test.arr3[5] = 36;
+	    display(data_test.arr3,6);
+	    display_address(data_test.arr1,5);
+	    display_address(data_test.arr2,3);
+	    display_address(data_test.arr3,6);    
+	}
+
+```
+
+### Kích thước của Union:
+
+**_Example:_**
+
+```C
+union Data {
+	uint8_t arr1[5];
+    uint8_t arr2[3];
+    uint8_t arr3[6];
+};
+
+```
+
+<img alt="hinh anh mo ta" src="./img/union2.png">
+
+**_Example 2:_**
+
+```C
+union Data {
+	uint8_t arr1[5]; // 8 byte
+    uint16_t arr2[9]; //20 byte
+    uint32_t arr3[3]; // 12 byte
+};
+
+```
+
+=> Kích thước của Union là 20 bytes.
+
+> - Cách tính kích thước của Union: Đầu tiên cũng xem coi thằng nào có kích thước lớn nhất, để quyết định số ô một lần quét. Trong ví dụ trên thì uint32_t là lớn nhất => Một lần sẽ quét 4 ô tương ứng với 4 bytes.
+
+### Ứng dụng:
+
+> - Union: tại một thời điểm thì nó chỉ được dùng 1 member => Do đó, nó thường được ứng dụng trong việc đọc Sensor Data, mà có nhiều Sensor được dung. Thì tại một thời điểm mình chỉ cần xử lý 1 thằng Sensor thôi thì ta dùng Union để tiết kiệm bộ nhớ.
+
+```C
+union SensorData {
+    int temperature;
+    float humidity;
+    char motionStatus;
+};
+
+```
+
+```C
+union Number {
+    int intValue;
+    float floatValue;
+};
+
+```
+
+# LESSON 9: KẾT HỢP GIỮA STRUCT VÀ UNION
