@@ -516,20 +516,6 @@ void calculator(void (*ptr)(int, int), int a, int b)
     ptr(a,b);
 }
 
-void divide(int a, int b)
-{
-    if (b == 0)
-    {
-        printf("Mau so phai khac 0\n");
-        return;
-    }
-    printf("%d divided by %d is: %f \n",a,b, (double)a / (double)b);
-}
-void calculator(void (*ptr)(int, int), int a, int b)
-{
-    printf("Program calculate: \n");
-    ptr(a,b);
-}
 int main()
 {
     calculator(sum,5,2);
