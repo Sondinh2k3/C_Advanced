@@ -1726,3 +1726,101 @@ union Number {
 ```
 
 # LESSON 9: KẾT HỢP GIỮA STRUCT VÀ UNION
+
+<img alt="Truyen du lieu giua 2 cam bien" src="./img/kethop_struct_union1.png">
+
+Trong các hệ thống nhúng thực tế, khi mà ta muốn truyền dữ liệu giữa 2 cảm biến. Ví dụ như MCU A muốn truyền một gói Data. Bên trong gói Data đó sẽ có: id sensor - để biết data đó của Sensor nào; data - dữ liệu truyền; checksum - để báo cho MCU B biết data truyền đi có chính xác hay không.
+
+Theo cách truyền thông thường, ta sẽ truyền lần lượt từng thằng: Đầu tiên truyền id trước, sau đấy truyền data rồi cuối cùng là truyền check sum. Nhưng mà bây giờ ta muốn truyền một lần thôi, và trong một lần truyền ta sẽ truyền hết tất cả các thông số sang MCU B luôn => Sử dụng Union.
+
+<img alt="frame union truyen di" src="./img/frame.png">
+
+> Hình trên mô tả một frame khi truyền đi mà chứa cả id, data và check sum luôn.
+
+**Cách triển khai:**
+
+> - Tạo một Union, trong đó, struct data và frame (union) dùng chung bộ nhớ => Khi truyền từ MCU A sang MCU B, ta truyền cái frame sang là được, chứ ko cần truyền lần lượt các thành phần trong struct
+
+**_Example 1:_**
+
+```C
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+typedef union {
+    struct {
+        uint8_t id[2];
+        uint8_t data[4];
+        uint8_t check_sum[2];
+    } data;
+    uint8_t frame[8];
+} Data_Frame;
+int main(int argc, char const *argv[])
+{
+    Data_Frame transmitter_data;
+    
+    strcpy(transmitter_data.data.id, "10");
+    strcpy(transmitter_data.data.data, "1234");
+    strcpy(transmitter_data.data.check_sum, "70");
+	Data_Frame receiver_data;
+    strcpy(receiver_data.frame, transmitter_data.frame);
+    
+    return 0;
+}
+```
+
+# LESSON 10: MEMORY LAYOUT
+
+> - Chương trình main.exe ( trên window), main.hex ( nạp vào vi điều khiển) được lưu ở bộ nhớ SSD hoặc FLASH. Khi nhấn run chương trình trên window ( cấp nguồn cho vi điều khiển) thì những chương trình này sẽ được copy vào bộ nhớ RAM để thực thi.
+
+<img alt="Memory layout" src="./img/memory_layout.png">
+
+**1. Text Segment:**
+
+> - Text Segment là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để lưu trữ mã máy của chương trình. Cụ thể, Text Segment chứa mã máy đã được biên dịch từ mã nguồn của chương trình và được CPU thực thi để thực hiện các hành động quy định trong chương trình.
+
+> - Mã máy:
+>   Chứa tập hợp các lệnh thực thi.
+>   Mã máy được tạo ra thông qua quá trình biên dịch từ mã nguồn của chương trình.
+> - Quyền truy cập: Text Segment thường có quyền đọc và thực thi, nhưng không có quyền ghi. Điều này ngăn chặn chương trình việc tự sửa đổi mã máy của nó.
+> - Kích thước cố định
+> - Lưu Trữ Hằng Số
+
+**2. Data Segment:**
+
+> - Data Segment là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để lưu trữ dữ liệu tĩnh của chương trình. Dữ liệu tĩnh bao gồm biến toàn cục và biến tĩnh (static), tức là các biến mà không phụ thuộc vào thời gian chạy của chương trình.
+
+> - Biến Toàn Cục (Global Variables):
+>   Các biến này có thể được truy cập từ bất kỳ hàm nào trong chương trình.
+> - Biến Tĩnh (Static Variables):
+>   Chứa giá trị của các biến tĩnh, nghĩa là biến được khai báo với từ khóa static.
+>   Có thể được truy cập chỉ trong phạm vi của hàm mà chúng được khai báo.
+
+> - Data segment còn được chia ra thành 2 phân vùng nhỏ: Phân vùng dữ liệu đã được khởi tạo, và phân vùng dữ liệu chưa được khởi tạo.
+
+<img alt="data segment" src="./img/data_segment.png">
+
+> - Initialized Data Segment (Dữ liệu Đã Khởi Tạo):
+>   Chứa các biến toàn cục và biến tĩnh được khởi tạo với giá trị khác 0.
+> - Uninitialized Data Segment (Dữ liệu Chưa Khởi Tạo):
+>   Chứa các biến toàn cục và biến tĩnh mà giá trị khởi tạo bằng 0 hoặc không gán giá trị.
+
+> - Quyền truy cập: Data Segment thường có quyền đọc và ghi, nghĩa là dữ liệu có thể được đọc và sửa đổi trong quá trình thực thi của chương trình.
+> - Kích thước thay đổi: Kích thước của Data Segment có thể thay đổi trong quá trình thực thi của chương trình khi các biến được khởi tạo hoặc giải phóng.
+
+**3. Stack**
+
+> - Stack là một phần quan trọng của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính. Nó được sử dụng để lưu trữ các biến cục bộ, các tham số truyền vào và các giá trị trả về từ hàm.
+
+> - Quyền truy cập: Bộ nhớ trên Stack thường có quyền đọc và ghi, nghĩa là dữ liệu có thể được đọc và sửa đổi trong suốt thời gian chương trình chạy.
+> - Chứa các biến cục bộ, tức là các biến được khai báo trong các hàm và chỉ có giá trị trong phạm vi của hàm đó.
+> - Kích thước cố định: phụ thuộc vào hệ điều hành, đối với Windows thường là 1MB, Linux là 8MB.
+
+**4. Heap**
+
+> - Heap là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để cấp phát bộ nhớ động. Các biến được cấp phát trên heap không có kích thước xác định tại thời điểm biên dịch và có thể được quản lý động trong quá trình thực thi của chương trình.
+
+> - Cấp phát động:
+>   Heap được sử dụng để cấp phát bộ nhớ động trong quá trình thực thi của chương trình.
+>   Điều này cho phép chương trình tạo ra và giải phóng bộ nhớ theo nhu cầu, thích ứng với sự biến đổi của dữ liệu trong quá trình chạy.
+>   Các hàm như malloc(), calloc(), realloc(), và free() được sử dụng để cấp phát và giải phóng bộ nhớ trên heap.
