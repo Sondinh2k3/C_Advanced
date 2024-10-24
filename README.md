@@ -1780,10 +1780,15 @@ int main(int argc, char const *argv[])
 > - Text Segment là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để lưu trữ mã máy của chương trình. Cụ thể, Text Segment chứa mã máy đã được biên dịch từ mã nguồn của chương trình và được CPU thực thi để thực hiện các hành động quy định trong chương trình.
 
 > - Mã máy:
->   Chứa tập hợp các lệnh thực thi.
->   Mã máy được tạo ra thông qua quá trình biên dịch từ mã nguồn của chương trình.
+
+> Chứa tập hợp các lệnh thực thi.
+
+> Mã máy được tạo ra thông qua quá trình biên dịch từ mã nguồn của chương trình.
+
 > - Quyền truy cập: Text Segment thường có quyền đọc và thực thi, nhưng không có quyền ghi. Điều này ngăn chặn chương trình việc tự sửa đổi mã máy của nó.
+
 > - Kích thước cố định
+
 > - Lưu Trữ Hằng Số
 
 **2. Data Segment:**
@@ -1791,21 +1796,29 @@ int main(int argc, char const *argv[])
 > - Data Segment là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để lưu trữ dữ liệu tĩnh của chương trình. Dữ liệu tĩnh bao gồm biến toàn cục và biến tĩnh (static), tức là các biến mà không phụ thuộc vào thời gian chạy của chương trình.
 
 > - Biến Toàn Cục (Global Variables):
->   Các biến này có thể được truy cập từ bất kỳ hàm nào trong chương trình.
+
+> Các biến này có thể được truy cập từ bất kỳ hàm nào trong chương trình.
+
 > - Biến Tĩnh (Static Variables):
->   Chứa giá trị của các biến tĩnh, nghĩa là biến được khai báo với từ khóa static.
->   Có thể được truy cập chỉ trong phạm vi của hàm mà chúng được khai báo.
+
+> Chứa giá trị của các biến tĩnh, nghĩa là biến được khai báo với từ khóa static.
+
+> Có thể được truy cập chỉ trong phạm vi của hàm mà chúng được khai báo.
 
 > - Data segment còn được chia ra thành 2 phân vùng nhỏ: Phân vùng dữ liệu đã được khởi tạo, và phân vùng dữ liệu chưa được khởi tạo.
 
 <img alt="data segment" src="./img/data_segment.png">
 
 > - Initialized Data Segment (Dữ liệu Đã Khởi Tạo):
->   Chứa các biến toàn cục và biến tĩnh được khởi tạo với giá trị khác 0.
+
+> Chứa các biến toàn cục và biến tĩnh được khởi tạo với giá trị khác 0.
+
 > - Uninitialized Data Segment (Dữ liệu Chưa Khởi Tạo):
->   Chứa các biến toàn cục và biến tĩnh mà giá trị khởi tạo bằng 0 hoặc không gán giá trị.
+
+> Chứa các biến toàn cục và biến tĩnh mà giá trị khởi tạo bằng 0 hoặc không gán giá trị.
 
 > - Quyền truy cập: Data Segment thường có quyền đọc và ghi, nghĩa là dữ liệu có thể được đọc và sửa đổi trong quá trình thực thi của chương trình.
+
 > - Kích thước thay đổi: Kích thước của Data Segment có thể thay đổi trong quá trình thực thi của chương trình khi các biến được khởi tạo hoặc giải phóng.
 
 **3. Stack**
@@ -1813,7 +1826,9 @@ int main(int argc, char const *argv[])
 > - Stack là một phần quan trọng của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính. Nó được sử dụng để lưu trữ các biến cục bộ, các tham số truyền vào và các giá trị trả về từ hàm.
 
 > - Quyền truy cập: Bộ nhớ trên Stack thường có quyền đọc và ghi, nghĩa là dữ liệu có thể được đọc và sửa đổi trong suốt thời gian chương trình chạy.
+
 > - Chứa các biến cục bộ, tức là các biến được khai báo trong các hàm và chỉ có giá trị trong phạm vi của hàm đó.
+
 > - Kích thước cố định: phụ thuộc vào hệ điều hành, đối với Windows thường là 1MB, Linux là 8MB.
 
 **4. Heap**
@@ -1821,6 +1836,9 @@ int main(int argc, char const *argv[])
 > - Heap là một phần của bộ nhớ trong mô hình bộ nhớ của một chương trình máy tính, được sử dụng để cấp phát bộ nhớ động. Các biến được cấp phát trên heap không có kích thước xác định tại thời điểm biên dịch và có thể được quản lý động trong quá trình thực thi của chương trình.
 
 > - Cấp phát động:
->   Heap được sử dụng để cấp phát bộ nhớ động trong quá trình thực thi của chương trình.
->   Điều này cho phép chương trình tạo ra và giải phóng bộ nhớ theo nhu cầu, thích ứng với sự biến đổi của dữ liệu trong quá trình chạy.
->   Các hàm như malloc(), calloc(), realloc(), và free() được sử dụng để cấp phát và giải phóng bộ nhớ trên heap.
+
+> Heap được sử dụng để cấp phát bộ nhớ động trong quá trình thực thi của chương trình.
+
+> Điều này cho phép chương trình tạo ra và giải phóng bộ nhớ theo nhu cầu, thích ứng với sự biến đổi của dữ liệu trong quá trình chạy.
+
+> Các hàm như malloc(), calloc(), realloc(), và free() được sử dụng để cấp phát và giải phóng bộ nhớ trên heap.
