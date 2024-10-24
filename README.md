@@ -1842,3 +1842,128 @@ int main(int argc, char const *argv[])
 > Điều này cho phép chương trình tạo ra và giải phóng bộ nhớ theo nhu cầu, thích ứng với sự biến đổi của dữ liệu trong quá trình chạy.
 
 > Các hàm như malloc(), calloc(), realloc(), và free() được sử dụng để cấp phát và giải phóng bộ nhớ trên heap.
+
+**Quyền truy cập:** Bộ nhớ trên heap thường có quyền đọc và ghi, nghĩa là dữ liệu có thể được đọc và sửa đổi trong suốt thời gian chương trình chạy.
+
+**Kích Thước Thay Đổi:** Kích thước của heap có thể thay đổi trong quá trình thực thi của chương trình, tùy thuộc vào các thao tác cấp phát và giải phóng bộ nhớ.
+
+**Không Giữ Giá Trị Mặc Định:** Bộ nhớ trên heap không giữ giá trị mặc định như trong Data Segment. Nếu không được khởi tạo, giá trị của biến trên heap sẽ không xác định.
+
+**_Example 1:_**
+
+```C
+#include <stdlib.h>
+int main() {
+    int *arr_malloc, *arr_calloc;
+    size_t size = 5;
+    // Sử dụng malloc
+    arr_malloc = (int*)malloc(size * sizeof(int));
+    // Sử dụng calloc
+    arr_calloc = (int*)calloc(size, sizeof(int));
+    // ...
+    // Giải phóng bộ nhớ
+    free(arr_malloc);
+    free(arr_calloc);
+    return 0;
+}
+
+```
+
+**_Example 2:_**
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char const *argv[])
+{  
+    int soluongkytu = 0;
+
+    char* ten = (char*) malloc(sizeof(char) * soluongkytu);
+//malloc => Chỉ cấp phát động
+//calloc => Cấp phát động và gán giá trị 0 cho các biến
+// realloc => Thay đổi kích thước được cấp phát. Nếu muốn thay đổi tăng kích thước thì phải cẩn thận vì có thể những địa chỉ tiếp theo đang có task khác dung.
+//free => Giải phóng bộ nhớ
+//Lý do sau khi dùng xong cấp phát động thì phải giải phóng: Do không gian bộ nhớ Heap có giới hạn, nếu như khi ta dung xong mà không giải phóng bộ nhớ, thì sẽ không còn chỗ cho những tác vụ khác sử dụng => Dẫn đến dễ bị tràn bộ nhớ heap
+    
+ for (int i = 0; i < 3; i++)
+    {
+        printf("Nhap so luong ky tu trong ten: \n");
+        scanf("%d", &soluongkytu);
+        ten = realloc(ten, sizeof(char) * soluongkytu);
+        printf("Nhap ten cua ban: \n");
+        scanf("%s", ten);
+
+		printf("Hello %s\n", ten);
+    } 
+    return 0;
+}
+
+```
+
+**5. Stack và Heap (So sánh)**
+
+**Bộ nhớ Stack** được dùng để lưu trữ các biến cục bộ trong hàm, tham số truyền vào... Truy cập vào bộ nhớ này rất nhanh và được thực thi khi chương trình được biên dịch.
+
+**Bộ nhớ Heap** được dùng để lưu trữ vùng nhớ cho những biến con trỏ được cấp phát động bởi các hàm malloc - calloc - realloc (trong C).
+
+> - Stack: kích thước của bộ nhớ Stack là cố định, tùy thuộc vào từng hệ điều hành, ví dụ hệ điều hành Windows là 1MB, hệ điều hành Linux là 8MB (lưu ý là con số có thể khác tùy thuộc vào kiến trúc hệ điều hành của bạn).
+
+> - Heap: kích thước của bộ nhớ Heap là không cố định, có thể tăng giảm do đó đáp ứng được nhu cầu lưu trữ dữ liệu của chương trình.
+
+> - Stack: vùng nhớ Stack được quản lý bởi hệ điều hành, dữ liệu được lưu trong Stack sẽ tự động giải phóng khi hàm thực hiện xong công việc của mình.
+
+> - Heap: Vùng nhớ Heap được quản lý bởi lập trình viên (trong C hoặc C++), dữ liệu trong Heap sẽ không bị hủy khi hàm thực hiện xong, điều đó có nghĩa bạn phải tự tay giải phóng vùng nhớ bằng câu lệnh free (trong C), và delete hoặc delete [] (trong C++), nếu không sẽ xảy ra hiện tượng rò rỉ bộ nhớ.
+
+**_Example 1:_**
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+void test1()
+{
+    int array[3];
+    for (int i = 0; i < 3; i++)
+    {
+        printf("address of array[%d]: %p\n", i, (array+i));
+    }
+    printf("----------------------\n");
+}
+void test2()
+{
+    int *array = (int*)malloc(3*sizeof(int));
+    for (int i = 0; i < 3; i++)
+    {
+        printf("address of array[%d]: %p\n", i, (array+i));
+    }
+    printf("----------------------\n");
+    //free(array);
+}
+
+int main(int argc, char const *argv[])
+{  
+    test1();
+    test1();
+    test2();
+    test2();
+
+    return 0;
+}
+
+```
+
+**Stack:** bởi vì bộ nhớ Stack cố định nên nếu chương trình bạn sử dụng quá nhiều bộ nhớ vượt quá khả năng lưu trữ của Stack chắc chắn sẽ xảy ra tình trạng tràn bộ nhớ Stack (Stack overflow), các trường hợp xảy ra như bạn khởi tạo quá nhiều biến cục bộ, hàm đệ quy vô hạn,...
+
+```C
+int foo(int x){
+	printf("De quy khong gioi han\n");
+    return foo(x);
+}
+
+```
+
+**Heap:** Nếu bạn liên tục cấp phát vùng nhớ mà không giải phóng thì sẽ bị lỗi tràn vùng nhớ Heap (Heap overflow). Nếu bạn khởi tạo một vùng nhớ quá lớn mà vùng nhớ Heap không thể lưu trữ một lần được sẽ bị lỗi khởi tạo vùng nhớ Heap thất bại.
+
+```C
+int *A = (int *)malloc(18446744073709551615);
+```
